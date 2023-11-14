@@ -8,31 +8,33 @@ const initialState = {
 };
 
 function reducer(state, action) {
-  switch (action.type) {
-    case 'openAccount':
-      return { ...state, balance: 500, isActive: true };
-    case 'deposit':
-      return { ...state, balance: state.balance + action.payload };
-    case 'withdraw':
-      return { ...state, balance: state.balance - action.payload };
-    case 'requestLoan':
-      return {
-        ...state,
-        loan: state.loan === 0 ? action.payload : state.loan,
-        balance:
-          state.loan === 0 ? state.balance + action.payload : state.balance,
-      };
-    case 'payLoan':
-      return {
-        ...state,
-        balance: state.loan !== 0 ? state.balance - state.loan : state.balance,
-        loan: 0,
-      };
-    case 'closeAccount':
-      return state.loan === 0 && state.balance === 0 ? initialState : state;
-    default:
-      return new Error('Unknown action');
-  }
+  if (!state.isActive && action.type !== 'openAccount')
+    switch (action.type) {
+      case 'openAccount':
+        return { ...state, balance: 500, isActive: true };
+      case 'deposit':
+        return { ...state, balance: state.balance + action.payload };
+      case 'withdraw':
+        return { ...state, balance: state.balance - action.payload };
+      case 'requestLoan':
+        return {
+          ...state,
+          loan: state.loan === 0 ? action.payload : state.loan,
+          balance:
+            state.loan === 0 ? state.balance + action.payload : state.balance,
+        };
+      case 'payLoan':
+        return {
+          ...state,
+          balance:
+            state.loan !== 0 ? state.balance - state.loan : state.balance,
+          loan: 0,
+        };
+      case 'closeAccount':
+        return state.loan === 0 && state.balance === 0 ? initialState : state;
+      default:
+        throw new Error('Unknown action');
+    }
 }
 
 export default function App() {
